@@ -1,0 +1,87 @@
+<html lang="ko"
+      xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org/">
+<head>
+    <meta charset="UTF-8">
+    <title>유저 상세정보</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <script>
+
+        // axios 통신 로직
+        $(function(){
+            // Usercontroller에서 model.attribute("id", no)를 통해 전달한 데이터를 ${id}로 받았는데
+            // 이 데이터를 const id에 저장.
+            const id = $('#id').val();
+
+            // axios를 통해 '/api/{id}'로 통신하면 UserRestController에 있는 readUser() 메서드 실행
+            // UserService로 이동한 후 비즈니스 로직 수행 -> 데이터를 JSON 형식으로 받아온다.
+            axios.get('/api/'+id, {
+
+                // 그러고나서 response를 실행하면 JSON형식으로 반환된 데이터를 각각 변수에 담아준다.
+            }).then(function(response){
+                const userid = response.data.userid;
+                const userpw = response.data.userpw;
+                const name = response.data.name;
+                const gender = response.data.gender;
+                const hp = response.data.hp;
+                const regdate = response.data.regdate;
+
+                $('#userid').text(userid)
+                $('#userpw').text(userpw)
+                $('#name').text(name)
+                $('#gender').text(gender)
+                $('#hp').text(hp)
+                $('#regdate').text(regdate)
+                // 담은 데이터들을 HTML 코드 안 들어갈 자리에 넘겨준다.
+            });
+        });
+
+        // 삭제 함수
+        function del(){
+            // alert()는 데이터 반환없이 화면만 출력 confirm은 사용자에게 true/false 데이터를 반환받고 prompt는 사용자에게 데이터를 입력받을 수 있다.
+            if(confirm('삭제하시겠습니까?')){
+
+                let id = $('#id').val();
+                axios.delete('/api/'+id)
+
+                    // axios.get(url, [,config])
+                    // 입력한 url에 존재하는 자원에게 요청을 한다.
+                    // axios.post("url주소", {데이터객체}, [,config])
+                    // 새로운 리소르를 생성할 때 사용
+                    // axios.delete(URL, [,config])
+                    // delete메서드는 서버에 있는 데이터베이스의 내용을 삭제하는 것을 주 목적으로 하기에
+                    // 두번째 인자를 아예 전달하지 않는다.
+                    // axios.put(url[, data[, config]])
+                    // 서버에 있는 데이터베이스이 내용을 변경하는 것을 주 목적으로 하고 있다.
+
+                    // 삭제를 실행한 후에
+                    .then(function(response){
+                        // 127.0.0.1:8080/user로 이동 -> 유저리스트 페이지가 보여지는 곳
+                        location.href= '/user/'
+                    }).catch(function(response){
+                    alert('삭제 에러 발생!')
+                })
+            }
+            return false;
+        }
+    </script>
+</head>
+<body>
+<h2>유저 상세정보</h2>
+<input type="hidden" id="id" th:value="${id}">
+<p> ID : <span id="userid"></span></p>
+<p> PW : <span id="userpw"></span></p>
+<p> 이름 : <span id="name"></span></p>
+<p> 성별 : <span id="gender"></span></p>
+<p> 연락처 : <span id="hp"></span></p>
+<p> 등록일 : <span id="regdate"></span></p>
+<p>
+    <a th:href="@{'/user/edit/'+${id}}"><button>정보수정</button></a>
+    <button onclick="del()">회원탈퇴</button>
+</p>
+
+
+
+</body>
+</html>

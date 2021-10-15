@@ -1,0 +1,83 @@
+<html lang="ko"
+      xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org/">
+<head>
+    <meta charset="UTF-8">
+    <title>유저정보 수정</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <script>
+
+        // axios 통신 로직
+        $(function() {
+            // Usercontroller에서 model.attribute("id", no)를 통해 전달한 데이터를 ${id}로 받았는데
+            // 이 데이터를 const id에 저장.
+            const id = $('#id').val();
+            axios.get('/api/' + id, {
+
+            }).then(function (response) {
+                const userid = response.data.userid;
+                const userpw = response.data.userpw;
+                const name = response.data.name;
+                const gender = response.data.gender;
+                const hp = response.data.hp;
+                // 정보 수정할 때 기존에 등록된 유저정보를 불러와서
+                // 입력버튼의 value값으로 등록한다.
+                document.getElementById("userid").value = userid;
+                document.getElementById("userpw").value = userpw;
+                document.getElementById("name").value = name;
+                document.getElementById("gender").value = gender;
+                document.getElementById("hp").value = hp;
+            }).then(function (err) {
+
+            })
+        });
+
+        // 정보수정 함수실행
+        function sendit(){
+            let id = $('#id').val();
+            let userid = $('#userid').val();
+            let userpw = $('#userpw').val();
+            let name = $('#name').val();
+            let gender = $('#gender').val();
+            let hp = $('#hp').val();
+
+            // HTTP 요청 PUT방식으로
+            // '/api/+id 로 접근 UserRestController -> updateUser() 메서드 실행 -> UserService() 로직 실행
+            // -> 데이터 수정
+            axios.request({
+                method: 'PUT',
+                url: '/api/'+id,
+                data: {
+                    // 전달할 데이터
+                    userid: userid,
+                    userpw: userpw,
+                    name: name,
+                    gender: gender,
+                    hp: hp
+                }
+                // 데이터 수정이 완료되었다면
+            }).then(function(response){
+                alert('수정되었습니다.'),
+                    // 127.0.0.1:8080/user --> 유저리스트 페이지로 이동
+                    location.href='/user/'
+            })
+            return false;
+        }
+    </script>
+</head>
+<body>
+<h2>유저 정보 수정</h2>
+<form method="post" onsubmit="return sendit()">
+    <input type="hidden" id="id" th:value="${id}">
+    <p>아이디 : <input type="text" name="userid" id="userid"></p>
+    <p>비밀번호 : <input type="password" name="userpw" id="userpw"></p>
+    <p>이름 : <input type="text" name="name" id="name"></p>
+    <p>성별 : <input type="text" name="gender" id="gender"></p>
+    <p>연락처 : <input type="tel" name="hp" id="hp"></p>
+    <p><input type="submit" value="수정"></p>
+</form>
+
+
+</body>
+</html>

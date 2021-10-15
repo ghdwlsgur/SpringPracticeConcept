@@ -1,0 +1,87 @@
+<html lang="ko"
+      xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org/">
+<head>
+    <meta charset="UTF-8">
+    <title>유저리스트</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <style>
+        table, tr, td { border: 1px solid #ccc; border-collapse: collapse}
+    </style>
+    <script>
+        // axios 통신 로직
+        $(function(){
+            axios.get('/api/list', {
+                // axios를 통해 '/api/{id}'로 통신하면 UserRestController에 있는 createUser() 메서드 실행
+                // UserService로 이동한 후 비즈니스 로직 수행 -> 데이터를 JSON 형식으로 받아온다.
+            }).then(function(response){
+                let tb = $('<tbody>');
+                // ------------------------<tbody>------------------------------
+
+                // UserService를 통해 반환된 데이터가 List타입이기 때문에 반복문을 돌려서
+                // 각 객체마다 데이터를 담아준다.
+                for(let i in response.data){
+                    let $id = response.data[i].id;
+                    let $userid = response.data[i].userid;
+                    let $name = response.data[i].name;
+                    let $regdate = response.data[i].regdate;
+                    let row = $('<tr>').append(
+                        "<td>"+$id+"</td>"+
+                        "<td><a href='/user/detail/"+$id+"'>"+$userid+"</a></td>"+
+                        "<td>"+$name+"</td>"+
+                        "<td>"+$regdate+"</td></tr>"
+                    )
+                    tb.append(row);
+                }
+                tb.append('</tbody>');
+                // ------------------------<tbody>------------------------------
+
+                $('.thead').after(tb); // html코드에서 <thead> ... </thead> >다음에 <tbody> 넣어주기
+            }).catch(function(err){
+                console.log(err);
+            })
+            return false;
+        });
+    </script>
+</head>
+<body>
+<h2>유저 리스트</h2>
+<table class=""user_list>
+    <thead class="thead">
+    <tr>
+        <th>번호</th>
+        <th>아이디</th>
+        <th>이름</th>
+        <th>등록일</th>
+    </tr>
+    </thead>
+    <!-- <tbody> -->
+    <!-- axios를 통해 각각의 유저 리스트가 들어갈 곳.
+        <tr>
+            <td>id</td>
+            <td>userid</td>
+            <td>userpw</td>
+            <td>regdate</td>
+        </tr>
+        <tr>
+            <td>id</td>
+            <td>userid</td>
+            <td>userpw</td>
+            <td>regdate</td>
+        </tr>
+        <tr>
+            <td>id</td>
+            <td>userid</td>
+            <td>userpw</td>
+            <td>regdate</td>
+        </tr>
+        ...
+     -->
+    <!-- </tbody> -->
+</table>
+<p><a href="/user/write">회원가입</a></p>
+
+
+</body>
+</html>
